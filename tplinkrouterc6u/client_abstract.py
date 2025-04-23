@@ -1,11 +1,13 @@
+from time import sleep
+
 from requests.packages import urllib3
 from logging import Logger
 from tplinkrouterc6u.common.package_enum import Connection
 from tplinkrouterc6u.common.dataclass import Firmware, Status, IPv4Status
-from abc import ABC, abstractmethod
+from abc import ABC, abstractmethod, ABCMeta
 
 
-class AbstractRouter(ABC):
+class AbstractRouter(ABC, metaclass=ABCMeta):
     def __init__(self, host: str, password: str, username: str = 'admin', logger: Logger = None,
                  verify_ssl: bool = True, timeout: int = 30) -> None:
         self.username = username
@@ -18,6 +20,11 @@ class AbstractRouter(ABC):
         self._verify_ssl = verify_ssl
         if self._verify_ssl is False:
             urllib3.disable_warnings()
+
+    def pppoe_reset(self, sleep_time: float = 3):
+        self.pppoe_disconnect()
+        sleep(sleep_time)
+        self.pppoe_connect()
 
     @abstractmethod
     def supports(self) -> bool:
@@ -49,4 +56,12 @@ class AbstractRouter(ABC):
 
     @abstractmethod
     def set_wifi(self, wifi: Connection, enable: bool) -> None:
+        pass
+
+    @abstractmethod
+    def pppoe_connect(self):
+        pass
+
+    @abstractmethod
+    def pppoe_disconnect(self):
         pass

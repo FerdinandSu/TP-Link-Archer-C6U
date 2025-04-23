@@ -66,6 +66,30 @@ class TPLinkXDRClient(AbstractRouter):
         dev_info = data['device_info']['info']
         return Firmware(dev_info['hw_version'], dev_info['device_model'], dev_info['sw_version'])
 
+    def pppoe_connect(self) -> bool:
+        data = self._request({
+            'method': 'do',
+            "network": {
+                "change_wan_status": {
+                    "proto": "pppoe",
+                    "operate": "connect"
+                }
+            },
+        })
+        return data["error_code"] == 0
+
+    def pppoe_disconnect(self) -> bool:
+        data = self._request({
+            'method': 'do',
+            "network": {
+                "change_wan_status": {
+                    "proto": "pppoe",
+                    "operate": "disconnect"
+                }
+            },
+        })
+        return data["error_code"] == 0
+
     def get_status(self) -> Status:
         data = self._request({
             'method': 'get',
@@ -249,9 +273,9 @@ class TPLinkXDRClient(AbstractRouter):
             pwd,
             'RDpbLfCPsJZ7fiv',
             ('yLwVl0zKqws7LgKPRQ84Mdt708T1qQ3Ha7xv3H7NyU84p21BriUWBU43odz3iP4rBL3cD'
-                '02KZciXTysVXiV8ngg6vL48rPJyAUw0HurW20xqxv9aYb4M9wK1Ae0wlro510qXeU07kV57fQMc8L6aLg'
-                'MLwygtc0F10a0Dg70TOoouyFhdysuRMO51yY5ZlOZZLEal1h0t9YQW0Ko7oBwmCAHoic4HYbUyVeU3sfQ'
-                '1xtXcPcf1aT303wAQhv66qzW'),
+             '02KZciXTysVXiV8ngg6vL48rPJyAUw0HurW20xqxv9aYb4M9wK1Ae0wlro510qXeU07kV57fQMc8L6aLg'
+             'MLwygtc0F10a0Dg70TOoouyFhdysuRMO51yY5ZlOZZLEal1h0t9YQW0Ko7oBwmCAHoic4HYbUyVeU3sfQ'
+             '1xtXcPcf1aT303wAQhv66qzW'),
         )
 
     @staticmethod
